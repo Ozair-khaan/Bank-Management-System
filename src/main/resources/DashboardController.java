@@ -1,5 +1,6 @@
 package com.bank.controller;
 
+import com.bank.dto.DashboardDTO;
 import com.bank.service.AccountService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,5 +19,11 @@ public class DashboardController {
 
     public String showDashboard(Model model){
         String username = "current_user";
+        
+        DashboardDTO dashboardData = accountService.getDashboardSummary(username);
+        model.addAttribute("dashboard", dashboardData);
+
+        // Resolves to /WEB-INF/jsp/dashboard.jsp
+        return "dashboard";
     }
 }
