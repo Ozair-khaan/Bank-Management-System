@@ -19,7 +19,7 @@ public class DashboardController {
 
     public String showDashboard(Model model){
         String username = "current_user";
-        
+
         DashboardDTO dashboardData = accountService.getDashboardSummary(username);
         model.addAttribute("dashboard", dashboardData);
 

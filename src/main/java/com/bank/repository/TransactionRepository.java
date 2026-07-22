@@ -1,4 +1,10 @@
 package com.bank.repository;
 
-public interface TransactionRepository {
+import com.bank.entity.Transaction;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface TransactionRepository extends JpaRepository<Transaction,Long> {
+    List<Transaction>findTop10ByAccountIdOrderByTransactionDateDesc(Long accountId);
 }
