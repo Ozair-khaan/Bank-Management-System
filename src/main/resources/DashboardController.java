@@ -17,7 +17,7 @@ public class DashboardController {
         this.accountService = accountService;
     }
 
-    public String showDashboard(Model model){
+    public String showDashboard(Model model) {
         String username = "current_user";
 
         DashboardDTO dashboardData = accountService.getDashboardSummary(username);

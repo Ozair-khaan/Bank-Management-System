@@ -9,6 +9,7 @@ import com.bank.exception.BankException;
 import com.bank.repository.AccountRepository;
 import com.bank.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,10 +18,10 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
@@ -57,10 +58,13 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
     public void transferFunds(String fromAccountNumber, String toAccountNumber, BigDecimal amount, String description) {
+        log.debug("Validating transfer parameters...");
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            log.warn("User {} attempted a transfer with an invalid amount: {}", fromAccountNumber, amount);
             throw new BankException("Transfer amount must be greater than zero");
         }
         if (fromAccountNumber.equals(toAccountNumber)) {
+            log.warn("User {} attempted to transfer funds to their own account.", fromAccountNumber);
             throw new BankException("Cannot transfer funds to the same account.");
         }
 
@@ -71,9 +75,11 @@ public class AccountServiceImpl implements AccountService {
                 .orElseThrow(() -> new BankException("Destination account not found"));
 
         if (source.getBalance().compareTo(amount) < 0) {
+            log.warn("Insufficient funds. User {} attempted to transfer {} but has only {}", fromAccountNumber, amount, source.getBalance());
             throw new BankException("Insufficient funds");
         }
 
+        log.debug("Deducting {} from {} and adding to {}", amount, fromAccountNumber, toAccountNumber);
         source.setBalance(source.getBalance().subtract(amount));
         destination.setBalance(destination.getBalance().add(amount));
 

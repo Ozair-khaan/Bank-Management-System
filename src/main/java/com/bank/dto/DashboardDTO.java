@@ -1,6 +1,5 @@
 package com.bank.dto;
 
-import com.bank.entity.Transaction;
 import lombok.Builder;
 import lombok.Data;
 

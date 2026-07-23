@@ -1,0 +1,49 @@
+2026-07-23T15:38:58.513+05:30  INFO 12632 --- [Bank-Management-System] [main] c.bank.BankManagementSystemApplication   : Starting BankManagementSystemApplication using Java 23.0.2 with PID 12632 (/Users/ozair/Documents/Java_Project/Bank-Management-System/target/classes started by ozair in /Users/ozair/Documents/Java_Project/Bank-Management-System)
+2026-07-23T15:38:58.514+05:30 DEBUG 12632 --- [Bank-Management-System] [main] c.bank.BankManagementSystemApplication   : Running with Spring Boot v4.1.0, Spring v7.0.8
+2026-07-23T15:38:58.514+05:30  INFO 12632 --- [Bank-Management-System] [main] c.bank.BankManagementSystemApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-07-23T15:38:58.802+05:30  INFO 12632 --- [Bank-Management-System] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-07-23T15:38:58.828+05:30  INFO 12632 --- [Bank-Management-System] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 21 ms. Found 2 JPA repository interfaces.
+2026-07-23T15:38:59.174+05:30  INFO 12632 --- [Bank-Management-System] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-07-23T15:38:59.187+05:30  INFO 12632 --- [Bank-Management-System] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-07-23T15:38:59.187+05:30  INFO 12632 --- [Bank-Management-System] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.22]
+2026-07-23T15:38:59.338+05:30  INFO 12632 --- [Bank-Management-System] [main] org.apache.jasper.servlet.TldScanner     : At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+2026-07-23T15:38:59.345+05:30  INFO 12632 --- [Bank-Management-System] [main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 806 ms
+2026-07-23T15:38:59.581+05:30  INFO 12632 --- [Bank-Management-System] [main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-07-23T15:38:59.642+05:30  INFO 12632 --- [Bank-Management-System] [main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.1.Final
+2026-07-23T15:38:59.873+05:30  INFO 12632 --- [Bank-Management-System] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-07-23T15:38:59.890+05:30  INFO 12632 --- [Bank-Management-System] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-07-23T15:39:00.015+05:30  INFO 12632 --- [Bank-Management-System] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7e691624
+2026-07-23T15:39:00.016+05:30  INFO 12632 --- [Bank-Management-System] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-07-23T15:39:00.058+05:30  WARN 12632 --- [Bank-Management-System] [main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-07-23T15:39:00.067+05:30  INFO 12632 --- [Bank-Management-System] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://localhost:3306/bank_db?useSSL=false&serverTimezone=UTC]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 9.5
+	Default catalog/schema: bank_db/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-07-23T15:39:00.535+05:30  INFO 12632 --- [Bank-Management-System] [main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-07-23T15:39:00.590+05:30  INFO 12632 --- [Bank-Management-System] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-07-23T15:39:00.634+05:30  INFO 12632 --- [Bank-Management-System] [main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-07-23T15:39:00.758+05:30  WARN 12632 --- [Bank-Management-System] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-07-23T15:39:00.796+05:30  INFO 12632 --- [Bank-Management-System] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2026-07-23T15:39:00.984+05:30  INFO 12632 --- [Bank-Management-System] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-07-23T15:39:00.987+05:30  INFO 12632 --- [Bank-Management-System] [main] c.bank.BankManagementSystemApplication   : Started BankManagementSystemApplication in 2.694 seconds (process running for 2.884)
+2026-07-23T15:39:27.948+05:30  INFO 12632 --- [Bank-Management-System] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-07-23T15:39:27.948+05:30  INFO 12632 --- [Bank-Management-System] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-07-23T15:39:27.953+05:30  INFO 12632 --- [Bank-Management-System] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 5 ms
+2026-07-23T15:42:47.982+05:30  INFO 12632 --- [Bank-Management-System] [http-nio-8080-exec-3] com.bank.controller.BankController       : User ACC100200300 accessed the dashboard.
+2026-07-23T15:42:59.131+05:30 DEBUG 12632 --- [Bank-Management-System] [http-nio-8080-exec-4] com.bank.controller.BankController       : User ACC100200300 loaded the transfer form.
+2026-07-23T15:43:48.160+05:30  INFO 12632 --- [Bank-Management-System] [http-nio-8080-exec-5] com.bank.controller.BankController       : Transfer initiated: From ACC100200300 to ACC100200300 | Amount: 1000000
+2026-07-23T15:43:48.170+05:30 DEBUG 12632 --- [Bank-Management-System] [http-nio-8080-exec-5] com.bank.service.AccountServiceImpl      : Validating transfer parameters...
+2026-07-23T15:43:48.170+05:30  WARN 12632 --- [Bank-Management-System] [http-nio-8080-exec-5] com.bank.service.AccountServiceImpl      : User ACC100200300 attempted to transfer funds to their own account.
+2026-07-23T15:43:48.175+05:30 ERROR 12632 --- [Bank-Management-System] [http-nio-8080-exec-5] com.bank.controller.BankController       : Transfer failed for user ACC100200300. Reason: Cannot transfer funds to the same account.
+2026-07-23T15:44:49.725+05:30  INFO 12632 --- [Bank-Management-System] [http-nio-8080-exec-7] com.bank.controller.BankController       : Transfer initiated: From ACC100200300 to ACC999888777 | Amount: 1000000
+2026-07-23T15:44:49.734+05:30 DEBUG 12632 --- [Bank-Management-System] [http-nio-8080-exec-7] com.bank.service.AccountServiceImpl      : Validating transfer parameters...
+2026-07-23T15:44:49.753+05:30  WARN 12632 --- [Bank-Management-System] [http-nio-8080-exec-7] com.bank.service.AccountServiceImpl      : Insufficient funds. User ACC100200300 attempted to transfer 1000000 but has only 25000.00
+2026-07-23T15:44:49.755+05:30 ERROR 12632 --- [Bank-Management-System] [http-nio-8080-exec-7] com.bank.controller.BankController       : Transfer failed for user ACC100200300. Reason: Insufficient funds
