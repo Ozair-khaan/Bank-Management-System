@@ -57,29 +57,31 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
-    public void transferFunds(String fromAccountNumber, String toAccountNumber, BigDecimal amount, String description) {
+    public void transferFunds(String fromAccountNum, String toAccountNum, BigDecimal amount, String desc) {
         log.debug("Validating transfer parameters...");
+
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
-            log.warn("User {} attempted a transfer with an invalid amount: {}", fromAccountNumber, amount);
-            throw new BankException("Transfer amount must be greater than zero");
+            log.warn("User {} attempted a transfer with an invalid amount: {}", fromAccountNum, amount);
+            throw new BankException("Transfer amount must be greater than zero.");
         }
-        if (fromAccountNumber.equals(toAccountNumber)) {
-            log.warn("User {} attempted to transfer funds to their own account.", fromAccountNumber);
+        if (fromAccountNum.equals(toAccountNum)) {
+            log.warn("User {} attempted to transfer funds to their own account.", fromAccountNum);
             throw new BankException("Cannot transfer funds to the same account.");
         }
 
-        Account source = accountRepository.findByAccountNumber(fromAccountNumber)
-                .orElseThrow(() -> new BankException("Source account not found"));
+        Account source = accountRepository.findByAccountNumber(fromAccountNum)
+                .orElseThrow(() -> new BankException("Source account not found."));
 
-        Account destination = accountRepository.findByAccountNumber(toAccountNumber)
-                .orElseThrow(() -> new BankException("Destination account not found"));
+        Account destination = accountRepository.findByAccountNumber(toAccountNum)
+                .orElseThrow(() -> new BankException("Destination account not found."));
 
         if (source.getBalance().compareTo(amount) < 0) {
-            log.warn("Insufficient funds. User {} attempted to transfer {} but has only {}", fromAccountNumber, amount, source.getBalance());
-            throw new BankException("Insufficient funds");
+            log.warn("Insufficient funds. User {} attempted to transfer {} but has only {}", fromAccountNum, amount, source.getBalance());
+            throw new BankException("Insufficient funds.");
         }
 
-        log.debug("Deducting {} from {} and adding to {}", amount, fromAccountNumber, toAccountNumber);
+        // Deduct and Add
+        log.debug("Deducting {} from {} and adding to {}", amount, fromAccountNum, toAccountNum);
         source.setBalance(source.getBalance().subtract(amount));
         destination.setBalance(destination.getBalance().add(amount));
 
@@ -94,7 +96,7 @@ public class AccountServiceImpl implements AccountService {
                 .account(source)
                 .amount(amount)
                 .type(TransactionType.TRANSFER_OUT)
-                .description("Transfer to " + toAccountNumber + " - " + description)
+                .description("Transfer to " + toAccountNum + " - " + desc)
                 .referenceNumber("TXN-" + refNum + "-D")
                 .transactionDate(LocalDateTime.now())
                 .build();
@@ -103,7 +105,7 @@ public class AccountServiceImpl implements AccountService {
                 .account(destination)
                 .amount(amount)
                 .type(TransactionType.TRANSFER_IN)
-                .description("Transfer from " + fromAccountNumber + " - " + description)
+                .description("Transfer from " + fromAccountNum + " - " + desc)
                 .referenceNumber("TXN-" + refNum + "-C")
                 .transactionDate(LocalDateTime.now())
                 .build();
