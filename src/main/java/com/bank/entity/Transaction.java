@@ -32,7 +32,12 @@ public class Transaction {
     @Column(nullable = false)
     private TransactionType type;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Builder.Default
+    private TransactionStatus status = TransactionStatus.SUCCESS;
+
+    @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal amount;
 
     private String description;

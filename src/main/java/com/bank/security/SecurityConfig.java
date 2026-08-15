@@ -60,7 +60,7 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
+    /*@Bean
     public CommandLineRunner fixPasswordHash(AccountRepository accountRepository, PasswordEncoder passwordEncoder) {
         return args -> {
             accountRepository.findByAccountNumber("ACC100200300").ifPresent(account -> {
@@ -69,5 +69,5 @@ public class SecurityConfig {
                 System.out.println("✅ SUCCESS: Database password hash has been corrected!");
             });
         };
-    }
+    }*/
 }

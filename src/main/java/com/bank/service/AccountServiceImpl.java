@@ -2,9 +2,7 @@ package com.bank.service;
 
 import com.bank.dto.DashboardDTO;
 import com.bank.dto.TransactionDTO;
-import com.bank.entity.Account;
-import com.bank.entity.Transaction;
-import com.bank.entity.TransactionType;
+import com.bank.entity.*;
 import com.bank.exception.BankException;
 import com.bank.repository.AccountRepository;
 import com.bank.repository.TransactionRepository;
@@ -55,6 +53,79 @@ public class AccountServiceImpl implements AccountService {
                 .build();
     }
 
+
+    @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
+    public void deposit(String accountNumber, BigDecimal amount, String description) {
+        validateAmount(amount);
+        Account account = accountRepository.findByAccountNumberForUpdate(accountNumber).orElseThrow(() ->
+                new BankException("Account not found"));
+        validateAccount(account);
+        account.setBalance(account.getBalance().add(amount));
+        accountRepository.save(account);
+
+        Transaction transaction = Transaction.builder()
+                .account(account)
+                .amount(amount)
+                .type(TransactionType.DEPOSIT)
+                .description(description != null && !description.isBlank()
+                        ? description
+                        : "Cash Deposit"
+                )
+                .referenceNumber(generateReference())
+                .transactionDate(LocalDateTime.now())
+                .build();
+
+        transactionRepository.save(transaction);
+
+        log.info("Deposit successful | Account = {} | Amount={}", accountNumber, account);
+    }
+
+    @Override
+    @Transactional(
+            isolation = Isolation.READ_COMMITTED,
+            rollbackFor = Exception.class)
+    public void withdraw(String accountNumber, BigDecimal amount, String description) {
+        validateAmount(amount);
+        Account account = accountRepository.findByAccountNumberForUpdate(accountNumber)
+                .orElseThrow(() -> new BankException("Account not found"));
+
+        validateAccount(account);
+
+        if (account.getBalance().compareTo(amount) < 0) {
+            log.warn("Insufficient balance | Account ={} | Balance = {} | Requested={}",
+                    accountNumber,
+                    account.getBalance(),
+                    amount);
+            throw new BankException("Insufficient funds.");
+        }
+        account.setBalance(
+                account.getBalance().subtract(amount)
+        );
+
+        accountRepository.save(account);
+
+        Transaction transaction = Transaction.builder()
+                .account(account)
+                .amount(amount)
+                .type(TransactionType.WITHDRAWAL)
+                .status(TransactionStatus.SUCCESS)
+                .description(description != null && !description.isBlank()
+                        ? description : "Cash withdrawal"
+                )
+                .referenceNumber(generateReference())
+                .transactionDate(LocalDateTime.now())
+                .build();
+
+        transactionRepository.save(transaction);
+
+        log.info(
+                "Withdrawal successful | Account={} | Amount={}",
+                accountNumber,
+                amount
+        );
+    }
+
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
     public void transferFunds(String fromAccountNum, String toAccountNum, BigDecimal amount, String desc) {
@@ -69,35 +140,74 @@ public class AccountServiceImpl implements AccountService {
             throw new BankException("Cannot transfer funds to the same account.");
         }
 
-        Account source = accountRepository.findByAccountNumber(fromAccountNum)
-                .orElseThrow(() -> new BankException("Source account not found."));
+        //modification added
+        String firstAccount;
+        String secondAccount;
 
-        Account destination = accountRepository.findByAccountNumber(toAccountNum)
-                .orElseThrow(() -> new BankException("Destination account not found."));
-
-        if (source.getBalance().compareTo(amount) < 0) {
-            log.warn("Insufficient funds. User {} attempted to transfer {} but has only {}", fromAccountNum, amount, source.getBalance());
-            throw new BankException("Insufficient funds.");
+        if (fromAccountNum.compareTo(toAccountNum) < 0) {
+            firstAccount = fromAccountNum;
+            secondAccount = toAccountNum;
+        } else {
+            firstAccount = toAccountNum;
+            secondAccount = fromAccountNum;
         }
 
-        // Deduct and Add
-        log.debug("Deducting {} from {} and adding to {}", amount, fromAccountNum, toAccountNum);
-        source.setBalance(source.getBalance().subtract(amount));
-        destination.setBalance(destination.getBalance().add(amount));
+        Account first =
+                accountRepository.findByAccountNumberForUpdate(firstAccount)
+                        .orElseThrow(() ->
+                                new BankException(
+                                        "Account not found: " + firstAccount
+                                ));
 
-        // Deduct and Add
+        Account second =
+                accountRepository.findByAccountNumberForUpdate(secondAccount)
+                        .orElseThrow(() ->
+                                new BankException(
+                                        "Account not found: " + secondAccount
+                                ));
+        //end
+
+        Account source =
+                first.getAccountNumber().equals(fromAccountNum)
+                        ? first
+                        : second;
+
+        Account destination =
+                first.getAccountNumber().equals(toAccountNum)
+                        ? first
+                        : second;
+
+        validateAccount(source);
+        validateAccount(destination);
+
+        if (source.getBalance().compareTo(amount) < 0) {
+
+            throw new BankException(
+                    "Insufficient funds."
+            );
+        }
+
+        source.setBalance(
+                source.getBalance().subtract(amount)
+        );
+
+        destination.setBalance(
+                destination.getBalance().add(amount)
+        );
+
         accountRepository.save(source);
         accountRepository.save(destination);
 
-        String refNum = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        String reference = generateReference();
 
-        // Record Transactions
         Transaction debit = Transaction.builder()
                 .account(source)
                 .amount(amount)
                 .type(TransactionType.TRANSFER_OUT)
-                .description("Transfer to " + toAccountNum + " - " + desc)
-                .referenceNumber("TXN-" + refNum + "-D")
+                .status(TransactionStatus.SUCCESS)
+                .description("Transfer to " + toAccountNum+ " - " + desc
+                )
+                .referenceNumber(reference + "-D")
                 .transactionDate(LocalDateTime.now())
                 .build();
 
@@ -105,12 +215,55 @@ public class AccountServiceImpl implements AccountService {
                 .account(destination)
                 .amount(amount)
                 .type(TransactionType.TRANSFER_IN)
-                .description("Transfer from " + fromAccountNum + " - " + desc)
-                .referenceNumber("TXN-" + refNum + "-C")
+                .status(TransactionStatus.SUCCESS)
+                .description("Transfer from "+ fromAccountNum+ " - " + desc)
+                .referenceNumber(reference + "-C")
                 .transactionDate(LocalDateTime.now())
                 .build();
 
         transactionRepository.save(debit);
         transactionRepository.save(credit);
+
+        log.info(
+                "Transfer successful | From={} | To={} | Amount={} | Reference={}",
+                fromAccountNum,
+                toAccountNum,
+                amount,
+                reference
+        );
+    }
+
+    private void validateAmount(BigDecimal amount) {
+
+        if (amount == null ||
+                amount.compareTo(BigDecimal.ZERO) <= 0) {
+
+            throw new BankException(
+                    "Amount must be greater than zero."
+            );
+        }
+    }
+
+
+    private void validateAccount(Account account) {
+
+        if (account.getStatus() != AccountStatus.ACTIVE) {
+
+            throw new BankException(
+                    "Account is not active. Current status: "
+                            + account.getStatus()
+            );
+        }
+    }
+
+
+    private String generateReference() {
+
+        return "TXN-"
+                + UUID.randomUUID()
+                .toString()
+                .replace("-", "")
+                .substring(0, 12)
+                .toUpperCase();
     }
 }

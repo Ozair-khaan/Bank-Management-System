@@ -1,7 +1,11 @@
 package com.bank.controller;
 
 import com.bank.dto.DashboardDTO;
+import com.bank.dto.DepositRequest;
+import com.bank.dto.TransferRequest;
+import com.bank.dto.WithdrawRequest;
 import com.bank.service.AccountService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -21,29 +25,42 @@ public class BankRestController {
     private final AccountService accountService;
 
     @GetMapping("/dashboard")
-    // Use @Parameter(hidden = true) so Swagger doesn't ask the user to type in a "Principal"
     public ResponseEntity<DashboardDTO> getDashboard(@Parameter(hidden = true) Principal principal) {
         String loggedInUser = principal.getName();
         log.info("API: Fetching dashboard for user {}", loggedInUser);
+        return ResponseEntity.ok(accountService.getDashboardSummary(loggedInUser));
+    }
 
-        DashboardDTO dashboardData = accountService.getDashboardSummary(loggedInUser);
-        return ResponseEntity.ok(dashboardData);
+    @PostMapping("/deposit")
+    public ResponseEntity<String> deposit(@Valid @RequestBody DepositRequest request,
+                                          @Parameter(hidden = true) Principal principal) {
+        accountService.deposit(
+                principal.getName(),
+                request.getAmount(),
+                request.getDescription()
+        );
+
+        return ResponseEntity.ok("Deposit successful. Amount: " + request.getAmount());
+    }
+
+    @PostMapping("/withdraw")
+    public ResponseEntity<String> withdraw(@Valid @RequestBody WithdrawRequest request,
+                                           @Parameter(hidden = true) Principal principal) {
+
+        accountService.withdraw(principal.getName(), request.getAmount(), request.getDescription());
+
+        return ResponseEntity.ok("Withdrawal successful. Amount: " + request.getAmount());
     }
 
     @PostMapping("/transfer")
-    public ResponseEntity<String> processTransfer(@RequestParam String toAccount,
-                                                  @RequestParam BigDecimal amount,
-                                                  @RequestParam String description,
-                                                  @Parameter(hidden = true) Principal principal) {
-        String loggedInUser = principal.getName();
-        log.info("API: Transfer initiated: From {} to {} | Amount: {}", loggedInUser, toAccount, amount);
+    public ResponseEntity<String> transfer(@Valid @RequestBody TransferRequest request, @Parameter(hidden = true) Principal principal) {
+        accountService.transferFunds(
+                principal.getName(),
+                request.getToAccount(),
+                request.getAmount(),
+                request.getDescription()
+        );
 
-        try {
-            accountService.transferFunds(loggedInUser, toAccount, amount, description);
-            return ResponseEntity.ok("Transfer of $" + amount + " completed successfully.");
-        } catch (Exception e) {
-            log.error("API: Transfer failed. Reason: {}", e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        return ResponseEntity.ok("Transfer successful. Amount: " + request.getAmount());
     }
 }

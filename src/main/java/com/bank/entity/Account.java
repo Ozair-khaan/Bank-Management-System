@@ -40,10 +40,22 @@ public class Account {
     @Column(nullable = false)
     private String accountType; // e.g., RETAIL, CORPORATE
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Builder.Default
+    private AccountStatus status = AccountStatus.ACTIVE;
+
+    @Version
+    private Long version;
+
     private LocalDateTime createdAt;
 
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+
+        if (status==null){
+            status=AccountStatus.ACTIVE;
+        }
     }
 }
