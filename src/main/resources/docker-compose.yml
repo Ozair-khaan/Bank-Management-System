@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: bank_db
+      MYSQL_USER: root
+      MSQL_PASSWORD: Sql@2026
+    ports:
+      - "3306:3306"
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0.0
+    command: start-dev
+    environment:
+      KC_DB: mysql
+      KC_DB_URL: jdbc:mysql://mysql:3306/bankdb
+      KC_DB_USERNAME: bankuser
+      KC_DB_PASSWORD: bankpassword
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+        - "8080:8080"
+    depends_on:
+        - mysql

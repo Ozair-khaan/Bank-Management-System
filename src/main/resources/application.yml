@@ -1,0 +1,23 @@
+server:
+  port: 8081
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: core-bank-service
+          uri: http://localhost:8082 # Your existing app port
+          predicates:
+            - Path=/api/**
+          filters:
+            - TokenRelay= # Passes the Keycloak token to your app
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8080/realms/bank-realm
+        registration:
+          keycloak:
+            client-id: bank-gateway
+            client-secret: <copy-from-keycloak-client-credentials>
+            scope: openid

@@ -5,16 +5,14 @@ import com.bank.dto.DepositRequest;
 import com.bank.dto.TransferRequest;
 import com.bank.dto.WithdrawRequest;
 import com.bank.service.AccountService;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.security.Principal;
-
-import io.swagger.v3.oas.annotations.Parameter;
 
 @Slf4j
 @RestController

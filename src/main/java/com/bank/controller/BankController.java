@@ -21,10 +21,10 @@ public class BankController {
     private final AccountService accountService;
 
     // Route for the custom login page
-    @GetMapping("/login")
+    /*@GetMapping("/login")
     public String showLoginPage() {
         return "login";
-    }
+    }*/
 
     @GetMapping("/app/dashboard")
     public String viewDashboard(Model model, Principal principal) {
